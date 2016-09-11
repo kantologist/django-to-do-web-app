@@ -1,10 +1,10 @@
 from selenium import webdriver
 import os
 import time
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.common.keys import Keys
 
-class NewVisitorTest(LiveServerTestCase):
+class NewVisitorTest(StaticLiveServerTestCase):
 
     def setUp(self):
         chromedriver = r'C:\Users\Oluwafemi\Downloads\chromedriver_win32\chromedriver'
@@ -14,6 +14,7 @@ class NewVisitorTest(LiveServerTestCase):
 
     def tearDown(self):
         #time.sleep(10)
+        self.browser.refresh()
         self.browser.quit()
 
     def check_for_row_in_list(self, row_text):
@@ -86,7 +87,7 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertIn('Buy milk',page_text)
 
         # Satisfied, they both go back to sleep
-        self.fail("Finish the test!")
+        # self.fail("Finish the test!")
 
     def test_layout_and_styling(self):
         # Edith goes to the Home page
@@ -104,7 +105,6 @@ class NewVisitorTest(LiveServerTestCase):
         # She starts a new list and sees that the input is nicely
         # centered too
         inputbox.send_keys('testing\n')
-        time.sleep(3)
         inputbox = self.browser.find_element_by_id('id_new_item')
         self.assertAlmostEqual(
         inputbox.location['x'] + inputbox.size['width']/2,
