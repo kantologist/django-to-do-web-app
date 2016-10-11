@@ -4,6 +4,7 @@ from lists.views import home_page
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 from lists.models import Item,List
+from django.utils.html import escape
 
 # Create your tests here.
 class HomePageTest(TestCase):
@@ -82,3 +83,15 @@ class NewListTest(TestCase):
         correct_list = List.objects.create()
         response = self.client.get('/lists/%d/' % (correct_list.id))
         self.assertEqual(response.context['list'], correct_list)
+
+    def test_validation_error_are_sent_back_to_home_page(self):
+        response = self.client.post('/lists/new', data={'item_text':''})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'home.html')
+        expected_error = escape("You can't have an empty list item")
+        self.assertContains(response, expected_error)
+
+    def test_invalid_item_are_not_saved(self):
+        response=self.client.post('/lists/new', data={'item_text':''})
+        self.assertEqual(List.objects.count(),0)
+        self.assertEqual(Item.objects.count(),0)
